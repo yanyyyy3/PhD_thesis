@@ -2,11 +2,11 @@
 
 For each Python script, **"-h" shows the detailed description, options and example to run the script.** 
 
-##For screen analysis:
+## For screen analysis:
 * The read counts of each gRNA from the screen is in **sample_count.csv**.
 * The results from *differential_abundance_analysis.R* are tables **"*_QLFTest.csv"**
 
-##For applying machine learning:
+## For applying machine learning:
 * The gRNAs for training the machine learning model is in **gRNA.csv**
 1. To optimize machine learning model using automated machine learning tool auto-sklearn, run *"autosklearn_regressor.py"*.
 2. To evaluate and interprete the optimized model from auto-sklearn, run *"sklearn_regressor.py"*.

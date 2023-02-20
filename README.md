@@ -7,11 +7,11 @@ In the thesis, I present results in the section 3:
 
 *3.2* Analysis of CRISPR-Cas genome-wide screens
 
-	*3.2.1* Analysis of CRISPR base editor genome-wide screen in Escherichia coli
+*3.2.1* Analysis of CRISPR base editor genome-wide screen in Escherichia coli
 
-	*3.2.2* Analysis of CRISPR-Cas13a genome-wide screen in Escherichia coli
+*3.2.2* Analysis of CRISPR-Cas13a genome-wide screen in Escherichia coli
 
-	*3.2.3* Analysis of CRISPR-Cas12a genome-wide screen in Klebsiella pneumoniae
+*3.2.3* Analysis of CRISPR-Cas12a genome-wide screen in Klebsiella pneumoniae
 
 In this repository, there are **FOUR** folders:
 * **CRISPRi** for result *3.1*

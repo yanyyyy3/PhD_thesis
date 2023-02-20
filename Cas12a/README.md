@@ -1,10 +1,10 @@
 # Analysis of CRISPR-Cas12a genome-wide screen in Escherichia coli
 
-##For screen analysis:
+## For screen analysis:
 To obtain the differential abundance (depletion score) of crRNAs, run *"screen_analysis_differential_abundance.R"* . The result file *"*_QLFTest.csv"* is included here.
 
 
-##For applying machine learning:
+## For applying machine learning:
 1. To optimize machine learning model using automated machine learning tool auto-sklearn, run *"autosklearn_regressor.py"*.
 2. To evaluate and interprete the optimized model from auto-sklearn, run *"sklearn_regressor.py"*.
 

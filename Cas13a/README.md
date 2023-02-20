@@ -1,11 +1,11 @@
 # Analysis of CRISPR-Cas13a genome-wide screen in Escherichia coli
 
-##For screen analysis:
+## For screen analysis:
 1. The sequence data of library screening is available with accession number GSE179913. After merging the pair-end reads, run *"screen_analysis_read_count.py"* to obtain the counts of crRNAs. A summary table of counts from all samples is also available in GSE179913.
 2. To obtain the differential abundance (depletion score) of crRNAs, run *"screen_analysis_differential_abundance.R"* . The result file *"targeting-nt_QLFTest.csv"* is included here.
 3. To investigate the relationship between expression level and depletion scores for each gene, run *"Depletion_ExpressionLevel_comparison.py"*. Expression level data can be assessed in GSE179914.
 
-##For applying machine learning:
+## For applying machine learning:
 1. To optimize machine learning model using automated machine learning tool auto-sklearn, run *"machine_learning_model_optimization_autosklearn.py"*.
 2. To evaluate and interprete the optimized model from auto-sklearn, run *"machine_learning_model_interpretation_treeSHAP.py"* (optimized model has been implemented in the script).
 3. To further explore the contribution of guide features to depletion, run *"machine_learning_guide_contribution_MERF.py"*.
