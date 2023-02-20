@@ -1,5 +1,5 @@
 # CRISPRi_guide_efficiency_bacteria
-This repository contains datasets and Python scripts that were used in the study **"Improved prediction of bacterial CRISPRi guide efficiency through data integration and automated machine learning"**. *Each folder corresponds to a section of the paper.* 
+This repository contains datasets and Python scripts that were used in the study **"Automated interference of CRISPRi guide efficiency in bacteria from genome-wide essentiality screens"**. *Each folder corresponds to a section of the study.* 
 
 For each Python script, **"-h" shows the detailed description, options and example to run the script.** The "test" folders are the example output of running the script. Please check the "log.txt" file for the input arguments of the tests. *For simplicity, please run the script at the same location as the script.*
 
