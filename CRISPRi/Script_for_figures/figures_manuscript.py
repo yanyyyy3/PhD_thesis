@@ -116,6 +116,81 @@ for f in ['1B']:
     plt.show()
     plt.close()
 #%%
+def overlapping_guides(training_df,validation_df,set1,set2):
+    pal=sns.color_palette("pastel")
+    training_df=training_df[(training_df['gene_essentiality']==1)&(training_df['intergenic']==0)&(training_df['coding_strand']==1)]
+    training_df=training_df.dropna()
+    # print(training_df.shape)
+    validation_df=validation_df[(validation_df['gene_essentiality']==1)&(validation_df['intergenic']==0)&(validation_df['coding_strand']==1)]
+    validation_df=validation_df.dropna()
+    print(validation_df.shape)
+    for i in list(set(training_df['geneid'])):
+        gene_df=training_df[training_df['geneid']==i]
+        median=statistics.median(gene_df['log2FC'])
+        for j in gene_df.index:
+            # training_df.at[j,'activity_score']=median-training_df['log2FC'][j]
+            training_df.at[j,'nr']=gene_df.shape[0]
+    for i in list(set(validation_df['geneid'])):
+        gene_df=validation_df[validation_df['geneid']==i]
+        for j in gene_df.index:
+            # validation_df.at[j,'activity_score']=median-validation_df['log2FC'][j]
+            validation_df.at[j,'nr']=gene_df.shape[0]
+    training_df=training_df[training_df['nr']>=5]      
+    validation_df=validation_df[validation_df['nr']>=5]      
+    training_ess=list(set(training_df['geneid']))
+    validation_ess=list(set(validation_df['geneid']))
+    # logging.info("Number of covered essential genes in dataset 1: %s"%len(training_ess))
+    # logging.info("Number of covered essential genes in dataset 2: %s"%len(validation_ess))
+    overlap_ess=[ess for ess in training_ess if ess in validation_ess]
+    print(len(overlap_ess))
+    # logging.info("Number of overlapping essential genes in both datasets: %s"%len(overlap_ess))
+    t_overlap_log2fc=[]
+    v_overlap_log2fc=[]
+    overlapping_guides=0
+    for ess in overlap_ess:
+        t=training_df[training_df['geneid']==ess]
+        v=validation_df[validation_df['geneid']==ess]
+        overlap_pos=[pos for pos in list(t['distance_start_codon']) if pos in list(v['distance_start_codon'])]
+        overlapping_guides+=len(overlap_pos)
+        if len(overlap_pos)==0:
+            continue
+        for pos in overlap_pos:
+            t_pos=t[t['distance_start_codon']==pos]
+            v_pos=v[v['distance_start_codon']==pos]
+            t_overlap_log2fc.append(sum(t_pos['log2FC']))
+            v_overlap_log2fc.append(sum(v_pos['log2FC']))
+    # logging.info("Number of overlapping guides: %s" %overlapping_guides)
+    r,_=pearsonr(t_overlap_log2fc,v_overlap_log2fc)
+    print(r,overlapping_guides)
+    # logging.info("Spearman correlation of overlapping guides: %s" %r)
+    sns.set_style('white')
+    plt.figure()
+    ax=sns.scatterplot(t_overlap_log2fc,v_overlap_log2fc,alpha=0.5,edgecolors='w',color=pal.as_hex()[0])
+    plt.text(0.01,0.85,"N = {0}".format(len(t_overlap_log2fc)),fontsize=14,transform=ax.transAxes)
+    plt.text(0.01,0.8,"Pearson R: {0}".format(round(r,2)),fontsize=14,transform=ax.transAxes)
+    plt.xlabel("logFC in %s"%set1)
+    plt.ylabel("logFC in %s"%set2)
+    plt.xticks(fontsize=14)
+    plt.yticks(fontsize=14)
+    # plt.show()
+    # plt.savefig("%s_%s.svg"%(set1,set2))
+    plt.close()
+path="github_code"
+folds=10
+datasets=[path+'/0_Datasets/E75_Rousset.csv',path+'/0_Datasets/E18_Cui.csv',path+'/0_Datasets/Wang_dataset.csv']
+rousset=pandas.read_csv(datasets[0],sep="\t")
+rousset = df1.sample(frac=1,random_state=np.random.seed(111)).reset_index(drop=True)
+rousset['dataset']=[0]*rousset.shape[0]
+rousset18=pandas.read_csv(datasets[1],sep="\t")
+rousset18 = rousset18.sample(frac=1,random_state=np.random.seed(111)).reset_index(drop=True)
+rousset18['dataset']=[1]*rousset18.shape[0]
+wang=pandas.read_csv(datasets[2],sep="\t")
+wang = wang.sample(frac=1,random_state=np.random.seed(111)).reset_index(drop=True)
+wang['dataset']=[2]*wang.shape[0]
+overlapping_guides(rousset,wang,'E75 Roussset','Wang')    
+overlapping_guides(rousset18,wang,'E18 Cui','Wang')    
+overlapping_guides(rousset,rousset18,'E75 Roussset','E18 Cui')   
+#%%
 '''
 Figure 1D
 '''
@@ -154,7 +229,7 @@ def DataFrame_input(df):
 Please change the path accordingly to direct the code to the dataset files
 '''
 
-path="github_code"
+path="/home/yan/Projects/CRISPRi_related/doc/CRISPRi_manuscript/github_code"
 folds=10
 datasets=[path+'/0_Datasets/E75_Rousset.csv',path+'/0_Datasets/E18_Cui.csv',path+'/0_Datasets/Wang_dataset.csv']
 df1=pandas.read_csv(datasets[0],sep="\t")
