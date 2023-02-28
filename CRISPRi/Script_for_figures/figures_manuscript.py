@@ -81,7 +81,7 @@ D.to_csv("figure1B.csv",sep='\t',index=False)
 '''
 I saved the results to the summplementary tables and plotted from the excel sheets
 '''
-df=pandas.read_excel("Yu_CRISPRi_supplementary_tables_YYu_v3.3.xlsx",sheet_name="TableS3_feature_engineering")
+df=pandas.read_excel("Yu_CRISPRi_supplementary_tables.xlsx",sheet_name="TableS3_feature_engineering")
 
 for f in ['1B']:
     headers=df.columns.values.tolist()
@@ -94,7 +94,7 @@ for f in ['1B']:
         
     ### Change the list according to the results included in the excel sheet
     for i in ['Sequence features', '+ distance features', '+ thermodynamic features', '128 guide features',
-              '128 guide features + target gene',#'Sequence + gene features (geneID)','137 guide + gene features (geneID)',
+              '128 guide features + target gene',
               'Sequence + gene features','137 guide + gene features','+ deltaGB','134 guide+gene (deltaGB)']:
         plot['test']+=[i]*10
     for key in plot.keys():
@@ -126,24 +126,18 @@ def overlapping_guides(training_df,validation_df,set1,set2):
     print(validation_df.shape)
     for i in list(set(training_df['geneid'])):
         gene_df=training_df[training_df['geneid']==i]
-        median=statistics.median(gene_df['log2FC'])
         for j in gene_df.index:
-            # training_df.at[j,'activity_score']=median-training_df['log2FC'][j]
             training_df.at[j,'nr']=gene_df.shape[0]
     for i in list(set(validation_df['geneid'])):
         gene_df=validation_df[validation_df['geneid']==i]
         for j in gene_df.index:
-            # validation_df.at[j,'activity_score']=median-validation_df['log2FC'][j]
             validation_df.at[j,'nr']=gene_df.shape[0]
     training_df=training_df[training_df['nr']>=5]      
     validation_df=validation_df[validation_df['nr']>=5]      
     training_ess=list(set(training_df['geneid']))
     validation_ess=list(set(validation_df['geneid']))
-    # logging.info("Number of covered essential genes in dataset 1: %s"%len(training_ess))
-    # logging.info("Number of covered essential genes in dataset 2: %s"%len(validation_ess))
     overlap_ess=[ess for ess in training_ess if ess in validation_ess]
     print(len(overlap_ess))
-    # logging.info("Number of overlapping essential genes in both datasets: %s"%len(overlap_ess))
     t_overlap_log2fc=[]
     v_overlap_log2fc=[]
     overlapping_guides=0
@@ -159,10 +153,8 @@ def overlapping_guides(training_df,validation_df,set1,set2):
             v_pos=v[v['distance_start_codon']==pos]
             t_overlap_log2fc.append(sum(t_pos['log2FC']))
             v_overlap_log2fc.append(sum(v_pos['log2FC']))
-    # logging.info("Number of overlapping guides: %s" %overlapping_guides)
     r,_=pearsonr(t_overlap_log2fc,v_overlap_log2fc)
     print(r,overlapping_guides)
-    # logging.info("Spearman correlation of overlapping guides: %s" %r)
     sns.set_style('white')
     plt.figure()
     ax=sns.scatterplot(t_overlap_log2fc,v_overlap_log2fc,alpha=0.5,edgecolors='w',color=pal.as_hex()[0])
@@ -179,7 +171,7 @@ path="github_code"
 folds=10
 datasets=[path+'/0_Datasets/E75_Rousset.csv',path+'/0_Datasets/E18_Cui.csv',path+'/0_Datasets/Wang_dataset.csv']
 rousset=pandas.read_csv(datasets[0],sep="\t")
-rousset = df1.sample(frac=1,random_state=np.random.seed(111)).reset_index(drop=True)
+rousset = rousset.sample(frac=1,random_state=np.random.seed(111)).reset_index(drop=True)
 rousset['dataset']=[0]*rousset.shape[0]
 rousset18=pandas.read_csv(datasets[1],sep="\t")
 rousset18 = rousset18.sample(frac=1,random_state=np.random.seed(111)).reset_index(drop=True)
@@ -229,7 +221,7 @@ def DataFrame_input(df):
 Please change the path accordingly to direct the code to the dataset files
 '''
 
-path="/home/yan/Projects/CRISPRi_related/doc/CRISPRi_manuscript/github_code"
+path="github_code"
 folds=10
 datasets=[path+'/0_Datasets/E75_Rousset.csv',path+'/0_Datasets/E18_Cui.csv',path+'/0_Datasets/Wang_dataset.csv']
 df1=pandas.read_csv(datasets[0],sep="\t")
@@ -247,8 +239,8 @@ training_df = training_df.sample(frac=1,random_state=np.random.seed(111)).reset_
 DataFrame_input(training_df)
 #%%
 '''
-Figure 1E
-Similar to Figure 1B
+Figure 1.2B
+Similar to Figure 1.1B
 '''
 ###collect results for figure 2 into a table
 for alg in ['LR','LASSO','ElasticNet','SVR','RF','HistGB','LASSO_MS','RF_MS','autosklearn']:
@@ -274,20 +266,24 @@ for alg in ['LR','LASSO','ElasticNet','SVR','RF','HistGB','LASSO_MS','RF_MS','au
 
 
 #%%
-#Figure 1E 
+'''
+#Figure 1.2B S1.3
+'''
 groug_num=5
-
-### Other tested model types shown in supplement figures
-# algs= ['Linear Regression','LASSO','Elastic Net','SVR','RF','HistGB','LASSO (gene-wise split)','RF (gene-wise split)']
-# df=pandas.read_excel("Yu_CRISPRi_supplementary_tables_YYu_v3.3.xlsx",sheet_name="TableS6_datafusion_modeltype")
-# headers=df.columns.values.tolist()
-# headers.remove('Model type')
-# headers.remove('train')
-
-### autosklearn-selected models
-algs=['autosklearn']
-df=pandas.read_excel("Yu_CRISPRi_supplementary_tables_YYu_v3.3.xlsx",sheet_name="TableS5_data_fusion")
-headers.remove('Fold')
+fig='1.2B'
+if fig!='1.2B':
+    algs= ['Linear Regression','LASSO','Elastic Net','SVR','RF','HistGB']
+    df=pandas.read_excel("Yu_CRISPRi_supplementary_tables.xlsx",sheet_name="TableS6_datafusion_modeltype")
+    headers=df.columns.values.tolist()
+    headers.remove('Model type')
+    headers.remove('train')
+    rotation=30
+else:
+    algs=['autosklearn']
+    df=pandas.read_excel("Yu_CRISPRi_supplementary_tables.xlsx",sheet_name="TableS5_data_fusion")
+    headers=df.columns.values.tolist()
+    headers.remove('Fold')
+    rotation=0
 
 
 sns.set_style('whitegrid')
@@ -331,7 +327,7 @@ for alg in algs:
 
 #%%
 '''
-Figure 2B
+Table 1
 Please change the training_datasets list to include the results with the identical names in the output table
 '''
 ###
@@ -350,10 +346,7 @@ training_labels={'R75':'E75 Rousset','C18':'E18 Cui','W': "Wang",
                     'R75W':'E75 Rousset & Wang','R75C18':'E75 Rousset & E18 Cui', 'C18W':'E18 Cui & Wang', '3sets': "3 datasets"}
 plot=defaultdict(list)
 for alg in algs:
-    if alg=='MERF' or alg=='MERF_noness':
-        
-        
-        # training_datasets=['3sets']
+    if alg=='MERF' :
         training_datasets=['R75','C18','W','R75W','3sets','3sets_deltaGB','3sets_rf','3sets_hist','3sets_dropdistance','3sets_CAI']
     elif alg in ['RF','LASSO','Pasteur']:
         training_datasets=['R75','C18','W','3sets']
@@ -502,8 +495,8 @@ https://tableconvert.com/excel-to-latex
 
 #%%
 '''
-##Figure 3 feature interpretation
-## 3B
+##Figure 1.4 feature interpretation
+## 1.4B
 '''
 shap_values=pandas.read_csv("MERF/3sets/shap_value_mean.csv",sep='\t')
 shap_values=shap_values.sort_values(by='shap_values',ascending=False)
@@ -517,7 +510,7 @@ plt.show()
 plt.close()
 #%%
 '''
-##Figure 3 feature interpretation
+##Figure S1.5 feature interpretation
 ## interaction SHAP plots
 '''
 import shap
@@ -950,7 +943,7 @@ plt.savefig("lacZ_bar_CVscale.svg")
 # plt.show()
 plt.close() 
 # metric_scores=pandas.DataFrame.from_dict(metric_scores)
-# metric_scores.to_csv("/home/yan/Projects/CRISPRi_related/doc/CRISPRi_manuscript/result/metric_scores.csv",sep='\t',index=False)
+# metric_scores.to_csv("metric_scores.csv",sep='\t',index=False)
 
 #%%
 '''
@@ -976,7 +969,9 @@ ax.spines['left'].set_visible(False)
 plt.show()
 plt.close()
 #%%
-
+'''
+Purine screen
+'''
 
 df=pandas.read_csv("pur_gRNAs.csv",sep='\t')
 '''
@@ -1260,13 +1255,42 @@ for test in ['PPV']:
     # plt.savefig("%s.svg"%ppv_plot,dpi=400)
     plt.show()
     plt.close()  
-
+#%%
+'''
+Figure 1.5D & S1.9A
+'''
+#log2FC vs distance start codon
+df=pandas.read_csv("pur_gRNAs.csv",sep='\t')
+sns.set_palette('PuBu',3)
+sns.set_style("white")
+fig, axes=plt.subplots(3,3)
+for gene in genes:
+    gene_df=df[(df['gene_name']==gene) ]
+    for OD in ['OD02','OD06','OD1']:#
+        test=OD+"_edgeR.batch"
+        ax=sns.regplot(data=gene_df,x='distance_start_codon',y=test,ax=axes[genes.index(gene)//3,genes.index(gene)%3],label=OD,line_kws={"linewidth":1},scatter_kws={"alpha":0.7,'s':1})
+    axes[genes.index(gene)//3,genes.index(gene)%3].set_title(gene,fontsize='small',pad=2.5)
+    axes[genes.index(gene)//3,genes.index(gene)%3].tick_params(labelsize=6,pad=-2.5)
+    axes[genes.index(gene)//3,genes.index(gene)%3].set_xlabel("")
+    axes[genes.index(gene)//3,genes.index(gene)%3].set_ylabel("")
+plt.subplots_adjust(wspace=0.15,hspace=0.3)
+fig.text(0.5, 0.01, 'Distance to start codon (bp)', ha='center',fontsize='small')
+fig.text(0.06, 0.5, 'logFC', va='center', rotation='vertical',fontsize='small')
+handles, labels = ax.get_legend_handles_labels()
+lgnd=fig.legend(handles[0:3], ['OD 0.2', 'OD 0.6', 'OD 1'], fontsize='xx-small',bbox_to_anchor=(0.22, 0.01, 0.5, 0.17),loc='center',
+       ncol=3)
+lgnd.legendHandles[0]._sizes=[40]
+lgnd.legendHandles[1]._sizes=[40]
+lgnd.legendHandles[2]._sizes=[40]
+plt.savefig("distance_logFC.svg")
+plt.show()
+plt.close()    
   
 
 
 #%%
 '''
-### Figure S6 the scatterplot of MERF prediction versus measured logFC of purine screen
+### Figure S1.9B the scatterplot of MERF prediction versus measured logFC of purine screen
 '''
 df=pandas.read_csv("pur_gRNAs.csv",sep='\t')
 df_sub=DataFrame_input(df)
@@ -1573,7 +1597,7 @@ for v in val:
     size['minimum_hamming'].append(np.min(dist.flatten()))
     size['average_hamming'].append(np.mean(dist.flatten()))
 size=pandas.DataFrame.from_dict(size)
-size.to_csv("/home/yan/Projects/CRISPRi_related/doc/CRISPRi_manuscript/result/figure1/hamming_distance/between_train_vali.tsv",sep='\t',index=False)
+size.to_csv("hamming_distance/between_train_vali.tsv",sep='\t',index=False)
     '''
 #%%
 '''
